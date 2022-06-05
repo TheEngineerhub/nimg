@@ -48,6 +48,6 @@ proc GetImg*(ctx: Context) {.async.} =
 when isMainModule:
   var app = newApp()
   app.addRoute("/", Home, HttpGet)
-  app.addRoute("/upload", UploadImg, HttpPost)
+  app.addRoute("/upload", UploadImg, HttpPost, middlewares = @[auth()])
   app.addRoute("/{filename}", GetImg, HttpGet)
   app.run()
