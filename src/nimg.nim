@@ -8,7 +8,11 @@ import std/strformat
 import std/os
 import dotenv
 
-load(os.getCurrentDir(), ".env")
+var NIMG_ENVIRONMENT = os.getEnv("NIMG_ENVIRONMENT", "production")
+
+if NIMG_ENVIRONMENT == "development":
+  echo fmt("Environment: {NIMG_ENVIRONMENT}")
+  overload(os.getCurrentDir(), ".env")
 
 proc Home*(ctx: Context) {.async.} =
   await ctx.staticFileResponse("./src/public/index.html", "")
@@ -32,7 +36,7 @@ proc UploadImg*(ctx: Context) {.async.} =
     if len(filterExt) <= 0:
       await ctx.respond(Http400, fmt("Mimetype must be one of following: {mimetypes}"))
     else:
-      var destDir: string = os.getEnv("STORAGE_PATH")
+      var destDir: string = os.getEnv("NIMG_STORAGE_PATH", os.getHomeDir())
       copyFileToDir(tempPath, destDir)
       await ctx.respond(Http200, "Success")
 
@@ -62,11 +66,12 @@ proc DelImg*(ctx: Context) {.async.} =
     await ctx.respond(Http404, fmt("Image not found: {fileParam}"))
 
 when isMainModule:
-  var env = loadPrologueEnv(".env")
-  var settings = newSettings(appName = env.getOrDefault("APP_NAME", "Prologue"),
-                         debug = env.getOrDefault("DEBUG", false),
-                         port = Port(env.getOrDefault("PORT", 8080)))
+  var settings = newSettings(appName = os.getEnv("NIMG_APP_NAME", "nimg"),
+                         debug = if os.getEnv("NIMG_DEBUG", "false") ==
+                             "false": false else: true,
+                         port = Port(parseInt(os.getEnv("NIMG_PORT", "8080"))))
 
+  echo "Starting nimg"
   var app = newApp(settings = settings)
   app.use(CorsMiddleware(allowOrigins = @["*"]))
   app.addRoute("/", Home, HttpGet)
