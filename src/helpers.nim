@@ -1,13 +1,13 @@
 import std/strformat
 import std/os
 
-proc isFileExistsAtStore(filename: string): bool =
+proc isFileExistsAtStore(filename: string): string =
   var storagePath = os.getEnv("STORAGE_PATH")
   var filePath = fmt("{storagePath}/{filename}")
 
   if fileExists(filePath):
-    return true
+    return filePath
   else:
-    return false
+    return ""
 
 export isFileExistsAtStore

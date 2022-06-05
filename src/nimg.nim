@@ -1,4 +1,5 @@
 import prologue
+import prologue/middlewares/cors
 import middleware
 import helpers
 import std/strutils
@@ -20,17 +21,18 @@ proc UploadImg*(ctx: Context) {.async.} =
     file = ctx.getUploadFile("image")
     var filename: string = file.filename
 
-    if isFileExistsAtStore(filename):
+    if isFileExistsAtStore(filename) != "":
       return ctx.respond(Http200, "File already exists")
 
     file.save("/tmp", filename)
-    var tempPath = fmt("/tmp/{filename}")
-    var ext = filename.split('.')
+    var tempPath: string = fmt("/tmp/{filename}")
+    var ext: seq[string] = filename.split('.')
     var filterExt = filter(mimetypes, proc(x: string): bool = x.contains(ext[1]))
+
     if len(filterExt) <= 0:
       await ctx.respond(Http400, fmt("Mimetype must be one of following: {mimetypes}"))
     else:
-      var destDir = os.getEnv("STORAGE_PATH")
+      var destDir: string = os.getEnv("STORAGE_PATH")
       copyFileToDir(tempPath, destDir)
       await ctx.respond(Http200, "Success")
 
@@ -41,28 +43,32 @@ proc UploadImg*(ctx: Context) {.async.} =
     await ctx.respond(Http400, e)
 
 proc GetImg*(ctx: Context) {.async.} =
-  var storagePath = os.getEnv("STORAGE_PATH")
-  var fileParam = ctx.getPathParams("filename")
-  var filePath = fmt("{storagePath}/{fileParam}")
+  var fileParam: string = ctx.getPathParams("filename")
+  var getFile: string = isFileExistsAtStore(fileParam)
 
-  if fileExists(filePath):
-    await ctx.staticFileResponse(filePath, "")
+  if getFile != "":
+    await ctx.staticFileResponse(getFile, "")
   else:
     await ctx.respond(Http404, fmt("Image not found: {fileParam}"))
 
 proc DelImg*(ctx: Context) {.async.} =
-  var storagePath = os.getEnv("STORAGE_PATH")
-  var fileParam = ctx.getPathParams("filename")
-  var filePath = fmt("{storagePath}/{fileParam}")
+  var fileParam: string = ctx.getPathParams("filename")
+  var getFile: string = isFileExistsAtStore(fileParam)
 
-  if fileExists(filePath):
-    removeFile(filePath)
+  if getFile != "":
+    removeFile(getFile)
     await ctx.respond(Http200, fmt("Deleted: {fileParam}"))
   else:
     await ctx.respond(Http404, fmt("Image not found: {fileParam}"))
 
 when isMainModule:
-  var app = newApp()
+  var env = loadPrologueEnv(".env")
+  var settings = newSettings(appName = env.getOrDefault("APP_NAME", "Prologue"),
+                         debug = env.getOrDefault("DEBUG", false),
+                         port = Port(env.getOrDefault("PORT", 8080)))
+
+  var app = newApp(settings = settings)
+  app.use(CorsMiddleware(allowOrigins = @["*"]))
   app.addRoute("/", Home, HttpGet)
   app.addRoute("/i/{filename}", GetImg, HttpGet)
   app.addRoute("/d/{filename}", DelImg, HttpGet, middlewares = @[auth()])
