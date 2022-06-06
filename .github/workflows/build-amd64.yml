@@ -19,5 +19,3 @@ jobs:
       - uses: jiro4989/setup-nim-action@v1
       - name: build nimg
         run: nimble build -Y
-        env:
-          NIMG_ENVIRONMENT: production
