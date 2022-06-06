@@ -1,7 +1,7 @@
-FROM debian:latest
+FROM debian:bullseye-slim
 
 # Install dependencies
-RUN apt update && apt install git curl gcc xz-utils -y
+RUN apt update && apt install bash git curl gcc xz-utils -y
 RUN curl --create-dirs -O --output-dir /tmp/choosenim https://nim-lang.org/choosenim/init.sh && cd /tmp/choosenim && bash ./init.sh -y
 
 # Add choosenim to path
