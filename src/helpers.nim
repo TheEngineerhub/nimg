@@ -10,4 +10,21 @@ proc isFileExistsAtStore(filename: string): string =
   else:
     return ""
 
+proc createUploadDir(): void =
+  var storagePath = os.getEnv("NIMG_STORAGE_PATH", os.getHomeDir())
+
+  if dirExists(storagePath) == false:
+    echo fmt("Storage directory does not exist, creating at: {storagePath}")
+    createDir(storagePath)
+
+proc getDebugSetting(): bool =
+  var isDebugEnabled = os.getEnv("NIMG_DEBUG", "true")
+
+  if isDebugEnabled == "true":
+    return true
+  else:
+    false
+
 export isFileExistsAtStore
+export createUploadDir
+export getDebugSetting

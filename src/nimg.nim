@@ -11,7 +11,6 @@ import dotenv
 var NIMG_ENVIRONMENT = os.getEnv("NIMG_ENVIRONMENT", "production")
 
 if NIMG_ENVIRONMENT == "development":
-  echo fmt("Environment: {NIMG_ENVIRONMENT}")
   overload(os.getCurrentDir(), ".env")
 
 proc Home*(ctx: Context) {.async.} =
@@ -67,10 +66,10 @@ proc DelImg*(ctx: Context) {.async.} =
 
 when isMainModule:
   var settings = newSettings(appName = os.getEnv("NIMG_APP_NAME", "nimg"),
-                         debug = if os.getEnv("NIMG_DEBUG", "false") ==
-                             "false": false else: true,
+                         debug = getDebugSetting(),
                          port = Port(parseInt(os.getEnv("NIMG_PORT", "8080"))))
 
+  createUploadDir()
   echo "Starting nimg"
   var app = newApp(settings = settings)
   app.use(CorsMiddleware(allowOrigins = @["*"]))
