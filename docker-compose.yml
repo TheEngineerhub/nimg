@@ -12,6 +12,6 @@ services:
       - NIMG_APP_NAME=nimg
     restart: always
     ports:
-      - 8080:8080 # Make sure ports are exact with NIMG_PORT variable below.
+      - 8080:8080 # Make sure ports are exact with NIMG_PORT variable above.
     volumes:
       - /home/alcadramin:/uploads # Make sure to change "/home/alcadramin" with your storage path.

@@ -9,21 +9,20 @@ It's basically a RESTful service. There is no complex auth mechanism such as JWT
 #
 
 - Get image:
-
-`GET: http://localhost:8080/i/image.png`
+  - `GET: http://localhost:8080/i/myimage.png`
 
 - Upload image:
-
-`POST: http://localhost:8080/u?token=super-secret`.
+  - `POST: http://localhost:8080/u?token=super-secret`
+  - **CURL**: `curl -F "image=@myimage.png" http://localhost:8080/u`
+  - **image** key is required.
 
 - Delete image:
-
-`GET: http://localhost:8080/d/image.png?token=super-secret`
+  - `GET: http://localhost:8080/d/myimage.png?token=super-secret`
 
 #
 
 - **token** query string is always required for **delete image**.
-- If public upload is disabled you also need to use your token.
+- If public upload is disabled, you must also use your token.
 
 ## How to setup
 
