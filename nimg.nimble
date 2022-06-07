@@ -13,3 +13,4 @@ bin           = @["nimg"]
 requires "nim >= 1.6.6"
 requires "prologue >= 0.6.0"
 requires "dotenv >= 2.0.0"
+requires "filetype >= 0.9.0"

@@ -1,7 +1,8 @@
 import prologue
 import prologue/middlewares/cors
+import filetype
 from ./middleware import auth, logger
-import helpers
+from ./helpers import isFileExistsAtStore, createUploadDir, getDebugSetting
 import std/strutils
 import std/sequtils
 import std/strformat
@@ -17,7 +18,8 @@ proc Home*(ctx: Context) {.async.} =
   await ctx.staticFileResponse("./src/public/index.html", "")
 
 proc UploadImg*(ctx: Context) {.async.} =
-  var mimetypes: seq[string] = @["png", "jpg", "jpeg", "gif", "svg"]
+  var mimetypes: seq[string] = @["jpeg", "jp2", "png", "gif", "webp", "cr2",
+      "tiff", "bmp", "jxr", "psd", "ico", "dwg"]
   var file: UploadFile
 
   try:
@@ -29,8 +31,9 @@ proc UploadImg*(ctx: Context) {.async.} =
 
     file.save("/tmp", filename)
     var tempPath: string = fmt("/tmp/{filename}")
-    var ext: seq[string] = filename.split('.')
-    var filterExt = filter(mimetypes, proc(x: string): bool = x.contains(ext[1]))
+    var ext: string = matchFile(tempPath).mime.subType
+    var filterExt = filter(mimetypes, proc(x: string): bool =
+      if isEmptyOrWhiteSpace(ext): return false else: x.contains(ext))
 
     if len(filterExt) <= 0:
       await ctx.respond(Http400, fmt("Mimetype must be one of following: {mimetypes}"))
