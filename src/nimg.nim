@@ -1,6 +1,6 @@
 import prologue
 import prologue/middlewares/cors
-import middleware
+from ./middleware import auth, logger
 import helpers
 import std/strutils
 import std/sequtils
@@ -70,9 +70,10 @@ when isMainModule:
                          port = Port(parseInt(os.getEnv("NIMG_PORT", "8080"))))
 
   createUploadDir()
-  echo "Starting nimg"
+  echo fmt("nimg is listening at :{settings.port}")
   var app = newApp(settings = settings)
   app.use(CorsMiddleware(allowOrigins = @["*"]))
+  app.use(logger())
   app.addRoute("/", Home, HttpGet)
   app.addRoute("/i/{filename}", GetImg, HttpGet)
   app.addRoute("/d/{filename}", DelImg, HttpGet, middlewares = @[auth()])
