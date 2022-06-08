@@ -4,14 +4,16 @@
 
 ## How to use
 
-It's basically a RESTful service. There is no complex auth mechanism such as JWT or a database. You just set a token with environment variable to manage images.
+It's basically a RESTful service. There is no complex auth mechanism such as JWT or a database. You just set a token with environment variable to manage images. To use with Flameshot simply download [this script](https://github.com/TheEngineerhub/nimg/blob/main/scripts/flameshot.sh), run after modifying the variables.
 
 #
 
 - Get image:
+
   - `GET: http://localhost:8080/i/myimage.png`
 
 - Upload image:
+
   - `POST: http://localhost:8080/u?token=super-secret`
   - **CURL**: `curl -F "image=@myimage.png" http://localhost:8080/u`
   - **image** key is required.
