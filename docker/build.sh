@@ -6,10 +6,10 @@ else
   IMAGE_TAG="${NIMG_TAG}"
 fi
 
-printf "=> Build tag: %s\n" "${NIMG_TAG}"
+printf "=> Build tag: %s\n" "${IMAGE_TAG}"
 
 build() {
-  docker buildx build -t engineerhub/nimg:"$IMAGE_TAG" --platform linux/arm64,linux/amd64 -f docker/build.Dockerfile --push .
+  docker buildx build -t engineerhub/nimg:"$IMAGE_TAG" -t engineerhub/nimg:latest --platform linux/arm64,linux/amd64 -f docker/build.Dockerfile --push .
   exit 1
 }
 

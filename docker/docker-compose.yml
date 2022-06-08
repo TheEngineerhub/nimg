@@ -1,9 +1,0 @@
-version: '3.3'
-
-services:
-  nimg:
-    image: engineerhub/nimg:${NIMG_TAG}
-    container_name: nimg
-    build:
-      context: ../
-      dockerfile: ./docker/amd64.Dockerfile

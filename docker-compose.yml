@@ -4,7 +4,6 @@ services:
   nimg:
     image: engineerhub/nimg:latest
     environment:
-      - NIMG_ENVIRONMENT=production
       - NIMG_PUBLIC_UPLOAD=true
       - NIMG_STORAGE_PATH=/uploads
       - NIMG_TOKEN=super-secret
