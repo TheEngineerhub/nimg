@@ -15,7 +15,7 @@ if NIMG_ENVIRONMENT == "development":
   overload(os.getCurrentDir(), ".env")
 
 proc Home*(ctx: Context) {.async.} =
-  await ctx.staticFileResponse("./src/public/index.html", "")
+  await ctx.respond(Http200, "nimg | No brainer image hosting.\n\nVisit: https://github.com/TheEngineerhub/nimg")
 
 proc UploadImg*(ctx: Context) {.async.} =
   var mimetypes: seq[string] = @["jpeg", "jp2", "png", "gif", "webp", "cr2",
