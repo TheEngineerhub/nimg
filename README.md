@@ -1,6 +1,6 @@
 # nimg
 
-**nimg** is a simple (~100 lines) self-hosted image hosting service written in [nim](https://nim-lang.org). I created this initally to store my screenshots captured with [Flameshot](https://flameshot.org/).
+**nimg** is a simple (~100 lines) self-hosted image/file hosting service written in [nim](https://nim-lang.org). I created this initally to store my screenshots captured with [Flameshot](https://flameshot.org/).
 
 ## How to use
 
@@ -10,13 +10,13 @@ It's basically a RESTful service. There is no complex auth mechanism such as JWT
 
 - Get image:
 
-  - `GET: http://localhost:8080/i/myimage.png`
+  - `GET: http://localhost:8080/myimage.png`
 
 - Upload image:
 
   - `POST: http://localhost:8080/u?token=super-secret`
   - **CURL**: `curl -F "image=@myimage.png" http://localhost:8080/u`
-  - **image** key is required.
+  - **file** key is required.
 
 - Delete image:
   - `GET: http://localhost:8080/d/myimage.png?token=super-secret`

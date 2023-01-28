@@ -19,11 +19,11 @@ proc Home*(ctx: Context) {.async.} =
 
 proc UploadImg*(ctx: Context) {.async.} =
   var mimetypes: seq[string] = @["jpeg", "jp2", "png", "gif", "webp", "cr2",
-      "tiff", "bmp", "jxr", "psd", "ico", "dwg"]
+      "tiff", "bmp", "jxr", "psd", "ico", "dwg", "pdf"]
   var file: UploadFile
 
   try:
-    file = ctx.getUploadFile("image")
+    file = ctx.getUploadFile("file")
     var filename: string = file.filename
 
     if isFileExistsAtStore(filename) != "":
@@ -40,7 +40,7 @@ proc UploadImg*(ctx: Context) {.async.} =
     else:
       var destDir: string = os.getEnv("NIMG_STORAGE_PATH", os.getHomeDir())
       copyFileToDir(tempPath, destDir)
-      await ctx.respond(Http200, "Success")
+      await ctx.respond(Http200, fmt("{ctx.request.hostName}/{filename}"))
 
     if fileExists(tempPath):
       removeFile(tempPath)
@@ -55,7 +55,7 @@ proc GetImg*(ctx: Context) {.async.} =
   if getFile != "":
     await ctx.staticFileResponse(getFile, "")
   else:
-    await ctx.respond(Http404, fmt("Image not found: {fileParam}"))
+    await ctx.respond(Http404, fmt("File not found: {fileParam}"))
 
 proc DelImg*(ctx: Context) {.async.} =
   var fileParam: string = ctx.getPathParams("filename")
@@ -65,7 +65,10 @@ proc DelImg*(ctx: Context) {.async.} =
     removeFile(getFile)
     await ctx.respond(Http200, fmt("Deleted: {fileParam}"))
   else:
-    await ctx.respond(Http404, fmt("Image not found: {fileParam}"))
+    await ctx.respond(Http404, fmt("File not found: {fileParam}"))
+
+proc go404*(ctx: Context) {.async.} =
+  await ctx.respond(Http404, "Not found!")
 
 when isMainModule:
   var settings = newSettings(appName = os.getEnv("NIMG_APP_NAME", "nimg"),
@@ -78,7 +81,8 @@ when isMainModule:
   app.use(CorsMiddleware(allowOrigins = @["*"]))
   app.use(logger())
   app.addRoute("/", Home, HttpGet)
-  app.addRoute("/i/{filename}", GetImg, HttpGet)
+  app.addRoute("/{filename}", GetImg, HttpGet)
   app.addRoute("/d/{filename}", DelImg, HttpGet, middlewares = @[auth()])
   app.addRoute("/u", UploadImg, HttpPost, middlewares = @[auth()])
+  app.registerErrorHandler(Http404, go404)
   app.run()
