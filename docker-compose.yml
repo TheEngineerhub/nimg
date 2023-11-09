@@ -6,7 +6,6 @@ services:
     environment:
       - NIMG_PUBLIC_UPLOAD=false
       - NIMG_STORAGE_PATH=/uploads
-      - NIMG_TOKEN=super-secret
       - NIMG_PORT=8080
       - NIMG_APP_NAME=nimg
     restart: always
