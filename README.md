@@ -8,17 +8,17 @@ It's basically a RESTful service. There is no complex auth mechanism such as JWT
 
 #
 
-- Get image:
+- Get the file:
 
   - `GET: http://localhost:8080/myimage.png`
 
-- Upload image:
+- Upload a file:
 
   - `POST: http://localhost:8080/u?token=super-secret`
-  - **CURL**: `curl -F "image=@myimage.png" http://localhost:8080/u`
+  - **CURL**: `curl -F "file=@myimage.png" http://localhost:8080/u`
   - **file** key is required.
 
-- Delete image:
+- Delete the file:
   - `GET: http://localhost:8080/d/myimage.png?token=super-secret`
 
 #
